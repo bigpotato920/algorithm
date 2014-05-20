@@ -1,33 +1,33 @@
 #include "tree_util.h"
-#include <stdio.h>
+#include <queue>
 
-static void build_tree_helper(TreeNode *root, char nodes[], int i, int n)
-{
-	if (root == NULL)
-		return;
-	TreeNode *lchild = NULL;
-	TreeNode *rchild = NULL;
-	//printf("root = %d, i = %d\n", root->val, i);
-
-	if ((2 * i + 1 < n) && nodes[2 * i + 1] != '#') {
-		lchild = new TreeNode(nodes[2 * i + 1] - '0');
-		build_tree_helper(lchild, nodes, 2 * i + 1, n);	
-	}
-
-	if ((2 * i + 2) < n && nodes[2 * i + 2] != '#') {
-		rchild = new TreeNode(nodes[2 * i + 2] - '0');
-		build_tree_helper(rchild, nodes, 2 * i + 2, n);
-	}
-
-	root->left = lchild;
-	root->right = rchild;
-}
+using namespace std;
 
 TreeNode *build_tree(char nodes[], int n)
 {
-	TreeNode *root = new TreeNode(nodes[0] - '0');
+	TreeNode *root = new TreeNode(nodes[0] - '0'); 
+	queue<TreeNode*> q;
+	bool is_left = true;
+	TreeNode *cur = NULL;
+	q.push(root);
 
-	build_tree_helper(root, nodes, 0, n);
+	for (int i = 1; i < n; i++) {
+		TreeNode *node = NULL;
+		if (nodes[i] != '#') {
+			node = new TreeNode(nodes[i] - '0');
+			q.push(node);
+		}
+
+		if (is_left) {
+			cur = q.front();
+			q.pop();
+			cur->left = node;
+			is_left = false;
+		} else {
+			cur->right = node;
+			is_left = true;
+		}
+	}
 
 	return root;
 }
